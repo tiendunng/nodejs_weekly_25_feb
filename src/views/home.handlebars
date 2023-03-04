@@ -1,0 +1,255 @@
+<script>
+    $(document).ready(() => {
+        // Css cho background
+        $('.parentDisable').css({
+            "position": "fixed",
+            "top": "0",
+            "left": "0",
+            "background": "black",
+            "opacity": "0.8",
+            " z-index": "998",
+            "height": "100%",
+            "width": "100%"
+        })
+        // Ẩn background
+        $('.parentDisable').hide();
+
+        // Chuyển hướng trang khi click vào các nút tương tác
+        // Nút detail
+        $('.detail').click(function(e) {
+            window.location.href = window.location.href + this.value;
+        })
+
+        // Nút Add
+        $('.add').click(() => {
+            window.location.href = window.location.href + 'add';
+        })
+
+        // Nút Edit
+        $('.edit').click(function() {
+            // Hiện toast Form
+            $('.toast_edit').toast('show');
+            $('.toast_edit').toast({
+                autohide: false
+            });
+            
+            // Show background
+            $(".parentDisable").show();
+
+            // Lấy các giá trị của một product cụ thể
+            let getVal = JSON.parse(decodeURIComponent(this.value));
+
+            // Gán các giá trị vào input của toast form
+            $($('input')[0]).val(getVal.name);
+            $($('input')[1]).val(parseInt(getVal.price.replace(',', '')));
+            $('textarea').val(getVal.info);
+            $('.valId').val(getVal.id);
+            $('.valFile').val(getVal.img);
+        })
+
+        // Nút đóng Toast Form
+        $('.btn-close').click(() => {
+            $('.toast_edit').toast('hide');
+            $(".parentDisable").hide();
+        })
+
+        // Lấy giá trị Id, Img
+        let getId, getPathImg
+
+        // Nút Xoá
+        $('.del').click(function() {
+            // Hiện toast Form
+            $('.toast_del').toast('show');
+            $('.toast_del').toast({
+                autohide: false
+            });
+
+            // Set Text
+            $('.text-toast').text(decodeURIComponent(this.value));
+
+            // Set Id và Img
+            getId = this.getAttribute("data-id");
+            getPathImg = decodeURIComponent(this.getAttribute("data-img"));
+            
+            // Show background
+            $(".parentDisable").show();
+        })
+
+        // Nút đóng Toast Delete
+        $('.btn_closeDel').click(() => {
+            $('.toast_edit').toast('hide');
+            $(".parentDisable").hide();
+        })
+
+        // Nút Take Action Xoá
+        $('.btn_takeAction').click(() => {
+            fetch('/delete', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: getId,
+                    img: getPathImg
+                })
+            }).then(() => {
+                window.location.reload();
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+
+        // Phần xử lí các Toast
+        // Biến show Toast
+        let isShow = true;
+
+        // Nếu có sự kiện Go Back thì show Toast là false (in case toast hiện 2 lần)
+        window.addEventListener('pageshow', function (event) {
+            var historyTraversal = event.persisted ||
+                (typeof window.performance != 'undefined' &&
+                    window.performance.navigation.type === 2);
+            if (historyTraversal) {
+                // Show toast là false nếu là quay lại từ cache
+                isShow = false;
+            }
+        });
+
+        // Config cho toast
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        // Nút đăng xuất
+        $('.logout').click(() => {
+            window.location.href = window.location.href + 'logout';
+        })
+        
+        // Nếu cả các biến Toast vs isShow là true thì được phép hiện Toast
+        {{#if addSuccess}}
+            setTimeout(() => {
+                if(isShow) {
+                    toastr.success('Đã thêm thành công!');
+                }
+            }, 700)
+        {{/if}}
+
+        {{#if editSuccess}}
+            setTimeout(() => {
+                if(isShow) {
+                    toastr.success('Đã sửa thành công!');
+                }
+            }, 700)
+        {{/if}}
+
+        {{#if delSuccess}}
+            setTimeout(() => {
+                if(isShow) {
+                    toastr.success('Đã xoá thành công!');
+                }
+            }, 700)
+        {{/if}}
+    })
+</script>
+<div class="container">
+    <h3 class="mt-3 mb-3">Danh sách sản phẩm</h3>
+    <button type="button" class="btn btn-danger position-absolute top-0 end-0 m-5 logout">Đăng xuất</button>
+    <button type="button" class="btn btn-danger mb-3 add">Thêm sản phẩm</button>
+    <p>Chọn một sản phẩm cụ thể để xem chi tiết</p>
+    <table class="table table-hover table-image">
+        <thead>
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Ảnh minh hoạ</th>
+                <th scope="col">Tên sản phẩm</th>
+                <th scope="col">Giá</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Load các product -->
+            {{#each products}}
+                <tr>
+                    <th scope="row" style="width:3%; text-align:center;">{{this.id}}</th>
+                    <td style="width:15%;"><img src={{this.img}} class="img-thumbnail rounded" alt=""></td>
+                    <td>{{this.name}}</td>
+                    <td>{{this.price}}$</td>
+                    <td>
+                        <button type="button" class="btn btn-danger detail" value={{this.id}}><i class="fa fa-info-circle"></i></button>
+                        <button type="button" class="btn btn-danger edit" value={{toJSON this}}><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-danger del" value={{enCode this.name}} data-id={{this.id}} data-img={{enCode this.img}}><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- background -->
+<div class="parentDisable"></div>
+
+<!-- Toast Form -->
+<div class="position-absolute top-50 start-50 translate-middle" style="z-index: 11;">
+    <div class="toast hide toast_edit" style="width: 500px;" data-bs-autohide="false" >
+        <div class="container rounded border border-light p-5 bg-body">
+            <button type="button" class="btn-close position-fixed top-0 end-0 p-3 m-3"></button>
+            <h3 class="text-warning mb-3">Sửa Sản Phẩm</h3>
+            <form action="/edit" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input type="text" class="form-control" placeholder="Nhập tên sản phẩm" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giá sản phẩm</label>
+                    <input type="number" class="form-control" placeholder="Nhập giá bán" name="price" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ảnh sản phẩm</label>
+                    <input class="form-control" type="file" id="formFile" name="image">
+                    <div class="form-text">
+                        Nếu như ô để trống thì ảnh vẫn sẽ giữ nguyên.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="des"
+                        required></textarea>
+                </div>
+                <input class="valId" hidden name="id"></input>
+                <input class="valFile" hidden name="img"></input>
+                <button type="submit" class="btn btn-warning">Cập Nhật Thay Đổi</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="position-absolute top-50 start-50 translate-middle" style="z-index: 11;">
+    <div class="toast hide toast_del bg-light" style="width: 500px;" data-bs-autohide="false" >
+        <div class="toast-header">
+            <h5 class="text-danger">Xoá sản phẩm</h5>
+        </div>
+        <div class="toast-body">
+            Bạn có chắc muốn xoá sản phẩm <span class="text-toast" style="font-weight: bold;"></span>?
+            <div class="mt-2 pt-2 border-top mb-5">
+                <div class="float-end">
+                    <button type="button" class="btn btn-danger btn-sm btn_takeAction my-3">Take action</button>
+                    <button type="button" class="btn btn-secondary btn-sm btn_closeDel my-3" data-bs-dismiss="toast">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

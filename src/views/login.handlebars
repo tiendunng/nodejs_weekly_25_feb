@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="css/style.css">
+{{#if failLogin}}
+    <script>
+        // Xử lý bất đồng bộ để khi nhận tham số và hiện Toast
+        setTimeout(() => {
+            $("#myToast").toast({
+                delay: 3000
+            });
+            $('#myToast').toast('show');
+        }, 100);
+    </script>
+{{/if}}
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">Laboratory Zero3</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-wrap py-5">
+                    <div class="img d-flex align-items-center justify-content-center"
+                        style="background-image: url(https://digitalsynopsis.com/wp-content/uploads/2019/04/beautiful-gradient-logo-designs-21.jpg)">
+                    </div>
+                    <h3 class="text-center mb-0">Welcome</h3>
+                    <p class="text-center">
+                        Sign in by entering the information below
+                    </p>
+                    <form action="/action" class="login-form" method="post">
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="fa fa-user"></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Username" required name="user" />
+                        </div>
+                        <div class="form-group">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="fa fa-lock"></span>
+                            </div>
+                            <input type="password" class="form-control" placeholder="Password" required name="pass" />
+                        </div>
+                        <div class="form-group d-md-flex">
+                            <div class="w-100 text-md-right">
+                                <a href="#">Forgot Password</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn form-control btn-primary rounded submit px-3">
+                                LOGIN
+                            </button>
+                        </div>
+                    </form>
+                    <div class="w-100 text-center mt-4 text">
+                        <p class="mb-0">Don't have an account?</p>
+                        <a href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast bg-danger text-white fade" id="myToast">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto"><i class="bi-gift-fill"></i> Cảnh báo!</strong>
+        </div>
+        <div class="toast-body">
+            Sai tài khoản hoặc mật khẩu!
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+<style>
+    .card-img-top {
+        width: 100%;
+        height: 25vw;
+        object-fit: cover;
+    }
+    body {
+        background-image: url('imgSystem/bg.jpg');
+    }
+</style>
+<div class="container">
+    <div class="mx-auto mt-5 card border border-secondary shadow-lg p-3 rounded-3" style="width: 30rem;">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="history.back()"></button>
+        <img src={{product.img}} class="card-img-top mw-50 rounded" alt="Fissure in Sandstone" />
+        <div class="card-body rounded">
+            <h3 class="card-title">{{product.name}}</h3>
+            <p class="card-text">{{product.info}}</p>
+            <p class="card-text bg-dark text-white p-3 rounded h4">Price: {{product.price}}$</p>
+        </div>
+    </div>
+</div>
